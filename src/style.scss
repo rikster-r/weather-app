@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
 
-$black: #333;
 $blue: #0400ff;
 $white: #fff;
 
@@ -28,6 +27,7 @@ body {
 
   font-size: 1rem;
   font-family: 'Montserrat', sans-serif;
+  color: $white;
 }
 
 form {
@@ -66,7 +66,7 @@ main {
     font-size: 130%;
 
     .row {
-      @include flexCenter()
+      @include flexCenter();
     }
   }
 }

@@ -1,7 +1,6 @@
 import './style.scss';
 
 async function getWeatherData(city) {
-
   let response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city.trim()}&units=metric&appid=f0230951adbf6fbf33eb40741168ca99`, { mode: 'cors' });
 
   if (response.status === 400) {
@@ -11,8 +10,7 @@ async function getWeatherData(city) {
   return response;
 }
 
-async function processResponse(promise) {
-  let response = await promise;
+async function processResponse(response) {
   let data = await response.json();
 
   let requiredData = {
@@ -60,28 +58,22 @@ function createCardDOM(data) {
   return card;
 }
 
-function handleNewCity(cityName) {
-  let responsePromise = getWeatherData(cityName);
-
-  responsePromise
-    .then(response => {
-      let dataPromise = processResponse(responsePromise);
-
-      dataPromise.then(data => {
-        main.replaceChild(createCardDOM(data), main.firstElementChild)
-      })
-    })
-    .catch(error => {
-      alert("Incorrect City Name");
-    })
+async function handleNewCity(cityName) {
+  try {
+    let response = await getWeatherData(cityName);
+    let data = await processResponse(response);
+    main.replaceChild(createCardDOM(data), main.firstElementChild);
+  } catch {
+    alert('Incorrect City Name');
+  }
 }
 
 const main = document.querySelector('main');
 const form = document.forms[0];
-const input = form.city;
+const searchBar = form.city;
 
 form.addEventListener('submit', (e) => {
   e.preventDefault();
 
-  handleNewCity(input.value);
+  handleNewCity(searchBar.value);
 });

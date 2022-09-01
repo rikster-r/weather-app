@@ -1,7 +1,10 @@
 import './style.scss';
 
 async function getWeatherData(city) {
-  let response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city.trim()}&units=metric&appid=f0230951adbf6fbf33eb40741168ca99`, { mode: 'cors' });
+  let response = await fetch(
+    `https://api.openweathermap.org/data/2.5/weather?q=${city.trim()}&units=${units}&appid=f0230951adbf6fbf33eb40741168ca99`,
+    { mode: 'cors' }
+  );
 
   if (response.status === 400) {
     throw new Error(response.statusText);
@@ -36,7 +39,7 @@ function createCardDOM(data) {
   card.append(row);
 
   let h1 = document.createElement('h1');
-  h1.innerText = `${data.name}, ${data.temp}°C`;
+  h1.innerText = `${data.name}, ${data.temp}${unitsSign}`;
   row.append(h1);
 
   let img = document.createElement('img');
@@ -44,7 +47,7 @@ function createCardDOM(data) {
   row.append(img);
 
   let p1 = document.createElement('p');
-  p1.innerText = `Feels like: ${data.feelsTemp}°C`;
+  p1.innerText = `Feels like: ${data.feelsTemp}${unitsSign}`;
   card.append(p1)
 
   let p2 = document.createElement('p');
@@ -52,7 +55,7 @@ function createCardDOM(data) {
   card.append(p2)
 
   let p3 = document.createElement('p');
-  p3.innerText = `Wind speed: ${data.windSpeed} m/s`;
+  p3.innerText = `Wind speed: ${data.windSpeed}${speedUnits}`;
   card.append(p3)
 
   return card;
@@ -68,12 +71,34 @@ async function handleNewCity(cityName) {
   }
 }
 
-const main = document.querySelector('main');
 const form = document.forms[0];
 const searchBar = form.city;
+const main = document.querySelector('main');
+const unitsCheckbox = document.querySelector('[data-units-checkbox]');
+unitsCheckbox.checked = false;
+
+let units = 'metric';
+let unitsSign = '°C';
+let speedUnits = 'm/s';
 
 form.addEventListener('submit', (e) => {
   e.preventDefault();
 
   handleNewCity(searchBar.value);
 });
+
+unitsCheckbox.addEventListener('change', function (e) {
+  if (e.target.checked) {
+    units = 'imperial';
+    unitsSign = '°F';
+    speedUnits = 'mph';
+  } else {
+    units = 'metric';
+    unitsSign = '°C';
+    speedUnits = 'm/s';
+  }
+
+  if (main.firstElementChild.innerHTML) { //if card already shown
+    handleNewCity(searchBar.value)
+  }
+})
